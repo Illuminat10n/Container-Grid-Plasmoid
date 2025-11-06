@@ -1,0 +1,108 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(plasma-containergrid)
+include(CMakePrintHelpers)
+
+set(BUILD_WITH_QT6 "ON")
+set(QT_VERSION_MAJOR "6")
+set(KF6_MIN_VERSION "6.0.0")
+set(QT_MIN_VERSION "6.6.0")
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_AUTOMOC ON)
+
+find_package(ECM 1.4.0 REQUIRED)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+# Directories where Qt Creator can find QML files.
+# (Not needed for builds, but makes Qt Creator code completion happy.)
+list(APPEND QML_IMPORT_PATH "/usr/share/plasma/")
+
+# Prevent adding duplicate values at each run of CMake.
+list(REMOVE_DUPLICATES QML_IMPORT_PATH)
+
+# The variable is cached in ${BUILD_DIR}/CMakeCache.txt. We need FORCE to
+# change it there immediately. Also, add a comment to the cache file.
+set(QML_IMPORT_PATH ${QML_IMPORT_PATH}
+    CACHE STRING "Qt Creator 4.1 extra qml import paths"
+    FORCE
+)
+
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings NO_POLICY_SCOPE)
+include(FeatureSummary)
+
+include(ECMQtDeclareLoggingCategory)
+include(ECMGenerateExportHeader)
+include(ECMInstallIcons)
+include(KDEPackageAppTemplates)
+include(GenerateExportHeader)
+include(CMakePackageConfigHelpers)
+include(KDEClangFormat)
+include(KDEGitCommitHooks)
+include(ECMDeprecationSettings)
+include(ECMQmlModule)
+
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O3")
+
+include_directories(/usr/include/Plasma)
+
+find_package(Plasma ${KF6_MIN_VERSION} REQUIRED)
+
+
+find_package(Plasma5Support REQUIRED)
+find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Quick Core DBus)
+find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS I18n XmlGui)
+
+message(STATUS "KF6_FOUND: ${KF6_FOUND}")
+message(STATUS "KF6_DIR: ${KF6_DIR}")
+
+# Debug KF6 package resolution
+get_cmake_property(_modules MODULES)
+message(STATUS "----- KF6 Debug Info -----")
+
+# 1. Where did CMake actually load the KF6Config.cmake from?
+get_filename_component(_kf6_config "${KF6_CONFIG}" ABSOLUTE)
+message(STATUS "KF6Config.cmake used: ${_kf6_config}")
+
+# 2. Print out include dirs and libs for some KF6 targets
+foreach(_tgt KF6::I18n KF6::XmlGui Plasma::Plasma Plasma::Plasma5Support)
+    if(TARGET ${_tgt})
+        get_target_property(_incs ${_tgt} INTERFACE_INCLUDE_DIRECTORIES)
+        get_target_property(_libs ${_tgt} INTERFACE_LINK_LIBRARIES)
+        get_target_property(_loc  ${_tgt} LOCATION) # may be empty for INTERFACE targets
+        message(STATUS "Target ${_tgt}:")
+        message(STATUS "   Includes: ${_incs}")
+        message(STATUS "   Libs:     ${_libs}")
+        message(STATUS "   Location: ${_loc}")
+    else()
+        message(STATUS "Target ${_tgt} NOT FOUND")
+    endif()
+endforeach()
+
+message(STATUS "----- End KF6 Debug Info -----")
+
+
+add_definitions(-DTRANSLATION_DOMAIN=\"plasma_applet_org.kde.plasma.containergrid\")
+
+add_library(org.kde.plasma.containergrid MODULE containergrid.h containergrid.cpp
+)
+#kcoreaddons_add_plugin(org.kde.plasma.containergrid SOURCES containergrid.h containergrid.cpp INSTALL_NAMESPACE "plasma/applets")
+#target_link_libraries(plasma_applet_containergrid
+target_link_libraries(org.kde.plasma.containergrid
+    Qt::Gui
+    Qt::Quick
+    Qt::DBus
+    Qt::Widgets
+    Plasma::Plasma
+    Plasma::Plasma5Support
+    KF6::XmlGui
+    KF6::I18n
+)
+
+# TODO: adapt "org.kde.plasma" here & elsewhere if needed (see README)
+plasma_install_package(package org.kde.plasma.containergrid)
+
+
+install(TARGETS org.kde.plasma.containergrid DESTINATION ${KDE_INSTALL_PLUGINDIR}/plasma/applets)
