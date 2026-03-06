@@ -47,24 +47,6 @@ ContainmentItem {
         return max + 1;
     }
 
-    // Convert a Containment applet object -> a unique UID string.
-    // Adjust this if your 'applet' object exposes different properties.
-    /*function uidFromApplet(applet) {
-
-        var plasmoidId = (applet && applet.plasmoid && applet.plasmoid.id) ? applet.plasmoid.id
-                        : (applet && applet.plugin) ? applet.plugin
-                        : null;
-        var instanceId = (applet && (applet.id !== undefined)) ? applet.id : null;
-
-        if (plasmoidId === null || instanceId === null)
-            return null;
-
-        return plasmoidId + ":" + instanceId;
-    }
-    */
-    /************************************************************************
-     * Containment signal handling
-     ************************************************************************/
     Containment.onAppletAdded: applet => {
         addApplet(applet)
     }
@@ -73,11 +55,6 @@ ContainmentItem {
         // Try to match an existing pending model row for the same plasmoidId
         var plasmoidId = (applet && applet.pluginName) ? applet.pluginName : null;
 
-        // Build uid from the real applet for unique matching
-        //var realUid = uidFromApplet(applet);
-
-
-        // No pending entry — append a new model row for this real applet
         var instance = nextInstanceFor(plasmoidId);
 
         const appletItem = root.itemFor(applet);
@@ -119,9 +96,7 @@ ContainmentItem {
         }
     }
 
-    /************************************************************************
-     * UI
-     ************************************************************************/
+    // UI
     Item {
         anchors.fill: parent
 
@@ -129,7 +104,6 @@ ContainmentItem {
             id: mainGrid
             anchors.fill: parent
 
-            // Repeater uses the model we built.
             // Each delegate must be a PlasmoidItem instance with the plasmoidId passed in.
             Repeater {
                 id: rep
@@ -142,11 +116,6 @@ ContainmentItem {
                     itemId: model.instance
                     applet: model.widget
                     visualIndex: model.index
-
-
-                    // If you need any layout hints, use attached Layout.* properties:
-                    //Layout.fillWidth: true
-                    //Layout.fillHeight: true
                 }
             }
 

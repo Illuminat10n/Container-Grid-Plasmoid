@@ -67,7 +67,6 @@ AbstractItem {
                 rightMargin: -margins.right
                 bottomMargin: -margins.bottom
             }
-            implicitWidth: Kirigami.Units.gridUnit * 12
             imagePath: "widgets/background"
             z: -10
     }
@@ -91,6 +90,15 @@ AbstractItem {
                 icon.width: Kirigami.Units.gridUnit
                 onClicked: {
                     applet.plasmoid.internalAction("remove").trigger();
+                    for(let i = 0 ; i < appletModel.count; i++){
+                        let p = appletModel.get(i);
+                        if(p.plasmoidId == plasmoidContainer.plasmoidId
+                                && p.instance == plasmoidContainer.itemId)
+                        {
+                            appletModel.remove(i, 1);
+                            break;
+                        }
+                    }
                 }
             }
 
