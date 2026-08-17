@@ -2,7 +2,7 @@ A widget which can group other widgets in a grid structure where you can move th
 You can also add it to a pop-up panel and have widgets stack horizontally and vertically which plasma panels can't do.
 Still in development, expect bugs.
 
-![screenshot](screenshot.png)
+![screenshot](https://github.com/Illuminat10n/Container-Grid-Plasmoid/blob/master/screenshot.png?raw=true)
 
 -- Build instructions --
 
