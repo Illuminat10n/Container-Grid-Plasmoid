@@ -4,13 +4,13 @@
  *
  *  SPDX-License-Identifier: GPL-2.0-or-later
  */
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
-import QtQuick.Window 2.0
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Window
 
 import org.kde.plasma.core as PlasmaCore
-import org.kde.kirigami 2.20 as Kirigami
-import org.kde.kquickcontrolsaddons 2.0
+import org.kde.kirigami as Kirigami
+import org.kde.kquickcontrolsaddons
 import org.kde.plasma.plasmoid
 
 PlasmaCore.ToolTipArea {
@@ -126,7 +126,7 @@ PlasmaCore.ToolTipArea {
                 plasmoidItem.expanded = false;
             }
 
-            LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+            LayoutMirroring.enabled: Application.layoutDirection === Qt.RightToLeft
             LayoutMirroring.childrenInherit: true
 
             Layout.minimumWidth: (fullRepresentation && fullRepresentation.Layout) ? fullRepresentation.Layout.minimumWidth : 0

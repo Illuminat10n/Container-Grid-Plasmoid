@@ -21,7 +21,7 @@ AbstractItem {
     property string plasmoidId: ""
 
     property int visualIndex
-    property alias headerItem: header
+
     //required property Item dragParent
 
     text: applet ? applet.plasmoid.title : ""
@@ -36,28 +36,6 @@ AbstractItem {
     Layout.columnSpan: 1
     Layout.rowSpan: 1
 
-    //Drag.source: plasmoidContainer
-
-    //drag.target: plasmoidContainer
-
-    /*onReleased: (mouse) => {
-        if (mouse.button == Qt.LeftButton){
-            console.log("Released!");
-            console.log(rep.model);
-            //Drag.drop()
-        }
-    }
-
-    onPressed: {
-        console.log("I was pressed!");
-        var realParent = parent;
-        //parent = dragLayer
-        //anchors.right = undefined;
-        //anchors.left = undefined;
-        //anchors.top = undefined;
-        //anchors.bottom = undefined;
-    } */
-
     KSvg.FrameSvgItem {
         id: backgroundFrame
             anchors {
@@ -71,15 +49,15 @@ AbstractItem {
             z: -10
     }
 
-    PlasmaExtras.PlasmoidHeading{
+    /*PlasmaExtras.PlasmoidHeading{
         id: header
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
 
-        visible: applet.expanded
+        visible: plasmoidContainer.applet && plasmoidContainer.applet.expanded
 
-        implicitHeight: applet.expanded ? headerRow.height : 0
+        implicitHeight: visible ? headerRow.implicitHeight : 0
 
         RowLayout{
             id: headerRow
@@ -108,7 +86,6 @@ AbstractItem {
                 icon.width: Kirigami.Units.gridUnit
                 onClicked: {
                     plasmoid.showPlasmoidMenu(applet, x, y);
-
                 }
             }
 
@@ -117,7 +94,8 @@ AbstractItem {
                 icon.height: Kirigami.Units.gridUnit
                 icon.width: Kirigami.Units.gridUnit
                 onClicked: {
-                    plasmoidContainer.Layout.columnSpan = plasmoidContainer.Layout.columnSpan === 1 ? 2 : 1;
+                    //plasmoidContainer.Layout.columnSpan = plasmoidContainer.Layout.columnSpan === 1 ? 2 : 1;
+                    plasmoidContainer.implicitHeight -= 10;
                 }
             }
 
@@ -126,19 +104,19 @@ AbstractItem {
                 icon.height: Kirigami.Units.gridUnit
                 icon.width: Kirigami.Units.gridUnit
                 onClicked: {
-                    plasmoidContainer.Layout.rowSpan = plasmoidContainer.Layout.rowSpan === 1 ? 2 : 1;
+                    //plasmoidContainer.Layout.rowSpan = plasmoidContainer.Layout.rowSpan === 1 ? 2 : 1;
+                    plasmoidContainer.implicitWidth -= 10;
                 }
             }
         }
     }
 
-
+    */
     DragHandler{
         id: titlebarGrab
 
-        target: plasmoidDelegate.header
+        target: plasmoidContainer
         enabled: true
-
 
         onActiveChanged: {
             console.log(active)
@@ -201,21 +179,25 @@ AbstractItem {
     */
 
 
-    Layout.margins: header.height > 0 ? header.height /2 : Kirigami.Units.gridUnit
+    Layout.margins: Kirigami.Units.gridUnit
 
-    onAppletChanged: {
-        if(applet){
-            applet.parent = this;
-            applet.anchors.topMargin = Kirigami.Units.cornerRadius
-            applet.anchors.top = header.bottom
-            applet.anchors.bottom = applet.parent.bottom
-            applet.anchors.left = applet.parent.left
-            applet.anchors.right = applet.parent.right
-            applet.visible = true;
-            //titlebarGrab.drag.target = plasmoidContainer;
-            //Drag.active = Qt.binding(function() {return titlebarGrab.drag})
-            Drag.active = Qt.binding(function() {return titlebarGrab.active})
-            //Drag.dragType = Drag.Automatic;
+    function syncAppletAnchors() {
+        if (!applet) {
+            return;
         }
+        applet.parent = plasmoidContainer;
+        applet.anchors.topMargin = Kirigami.Units.cornerRadius
+        applet.anchors.top = plasmoidContainer.top
+        applet.anchors.bottom = plasmoidContainer.bottom
+        applet.anchors.left = plasmoidContainer.left
+        applet.anchors.right = plasmoidContainer.right
+        applet.visible = true;
+        //titlebarGrab.drag.target = plasmoidContainer;
+        //Drag.active = Qt.binding(function() {return titlebarGrab.drag})
+        Drag.active = Qt.binding(function() {return titlebarGrab.active})
+        //Drag.dragType = Drag.Automatic;
     }
+
+    onAppletChanged: Qt.callLater(syncAppletAnchors)
+    Component.onCompleted: Qt.callLater(syncAppletAnchors)
 }

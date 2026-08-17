@@ -28,7 +28,7 @@ ContainerGrid::ContainerGrid(QObject *parent, const KPluginMetaData &data, const
 void ContainerGrid::init()
 {
     //setContainmentDisplayHints(Plasma::Types::ContainmentPrefersFloatingApplets);
-    migrateFromContainer();
+    //migrateFromContainer();
 }
 
 void ContainerGrid::migrateFromContainer()

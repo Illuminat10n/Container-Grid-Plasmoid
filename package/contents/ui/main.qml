@@ -13,8 +13,8 @@ ContainmentItem {
     id: root
 
     // be at least the same size as the system tray popup
-    Layout.minimumWidth: Kirigami.Units.gridUnit * 24
-    Layout.minimumHeight: Kirigami.Units.gridUnit * 21
+    Layout.minimumWidth: Kirigami.Units.gridUnit * 9
+    Layout.minimumHeight: Kirigami.Units.gridUnit * 9
     Layout.preferredWidth: Layout.minimumWidth
     Layout.preferredHeight: Layout.minimumHeight * 1.5
     Layout.fillHeight: true
@@ -182,8 +182,10 @@ ContainmentItem {
                 return;
             }
             var surface = mainGrid.childAt(event.x, event.y);
-            //console.log(surface);
-            appletModel.move(drop.visualIndex, surface.visualIndex, 1)
+
+            if (surface){
+                appletModel.move(drop.visualIndex, surface.visualIndex, 1)
+            }
         }
 
         onDropped: event => {
